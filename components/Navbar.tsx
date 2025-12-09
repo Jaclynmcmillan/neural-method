@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { NavChild } from '../types';
-import Logo from './Logo';
+import logo from '../assets/logo.png'; // ⭐️ Your real logo file
 
 const solutions: NavChild[] = [
   { label: 'Brand Identity', description: 'Logo, typography, visual systems', path: '/solutions/brand-identity' },
@@ -17,12 +17,12 @@ const solutions: NavChild[] = [
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false); // Desktop dropdown state
-  const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false); // Mobile dropdown state
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
   const location = useLocation();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown when clicking outside (Desktop only)
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -33,7 +33,7 @@ const Navbar: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Close menus on route change
+  // Close menus when route changes
   useEffect(() => {
     setIsOpen(false);
     setDropdownOpen(false);
@@ -49,15 +49,15 @@ const Navbar: React.FC = () => {
   const toggleMobileDropdown = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setMobileDropdownOpen((prev) => !prev);
+    setMobileDropdownOpen(prev => !prev);
   };
 
   return (
     <nav className="fixed w-full z-50 bg-primary/95 backdrop-blur-md border-b border-secondary/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          
-          {/* Logo */}
+
+          {/* Logo + Brand */}
           <Link 
             to="/" 
             className="flex items-center space-x-3 group relative z-50"
@@ -66,27 +66,37 @@ const Navbar: React.FC = () => {
               setIsOpen(false);
             }}
           >
-            <Logo className="w-10 h-10 group-hover:scale-105 transition-transform duration-300" />
-            <span className="font-montserrat font-bold text-2xl tracking-tight text-white group-hover:text-white/90 transition-colors">Neural Method</span>
+            <img
+              src={logo}
+              alt="Neural Method Logo"
+              className="w-10 h-10 object-contain group-hover:scale-105 transition-transform duration-300"
+            />
+            <span className="font-montserrat font-bold text-2xl tracking-tight text-white group-hover:text-white/90 transition-colors">
+              Neural Method
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            
+
             {/* Solutions Dropdown */}
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className={`flex items-center font-medium transition-colors ${dropdownOpen ? 'text-accent' : 'text-neutral-light hover:text-accent'}`}
+                className={`flex items-center font-medium transition-colors ${
+                  dropdownOpen ? 'text-accent' : 'text-neutral-light hover:text-accent'
+                }`}
               >
                 Solutions
-                <ChevronDown className={`ml-1 w-4 h-4 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`ml-1 w-4 h-4 transition-transform duration-200 ${
+                  dropdownOpen ? 'rotate-180' : ''
+                }`} />
               </button>
 
               {dropdownOpen && (
                 <div className="absolute top-full right-0 mt-4 w-80 bg-secondary rounded-xl shadow-2xl border border-white/5 overflow-hidden animate-fade-in-down p-2">
                   <div className="grid gap-1">
-                    {solutions.map((item) => (
+                    {solutions.map(item => (
                       <Link
                         key={item.label}
                         to={item.path}
@@ -133,19 +143,22 @@ const Navbar: React.FC = () => {
       {isOpen && (
         <div className="fixed inset-0 top-20 z-40 md:hidden bg-primary border-t border-secondary overflow-y-auto h-[calc(100vh-5rem)]">
           <div className="flex flex-col px-4 pt-4 pb-12 space-y-2">
-            
+
+            {/* Mobile Solutions Dropdown */}
             <div className="space-y-1">
               <button
                 onClick={toggleMobileDropdown}
                 className="w-full text-left px-3 py-4 text-lg text-neutral-light hover:text-accent font-medium flex justify-between items-center rounded-lg hover:bg-white/5 transition-colors border-b border-white/5"
               >
                 Solutions
-                <ChevronDown className={`w-5 h-5 transition-transform ${mobileDropdownOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`w-5 h-5 transition-transform ${
+                  mobileDropdownOpen ? 'rotate-180' : ''
+                }`} />
               </button>
-              
+
               {mobileDropdownOpen && (
                 <div className="pl-4 space-y-1 bg-white/5 rounded-lg my-2 py-2 animate-fade-in">
-                  {solutions.map((item) => (
+                  {solutions.map(item => (
                     <Link
                       key={item.label}
                       to={item.path}
@@ -166,7 +179,7 @@ const Navbar: React.FC = () => {
             >
               About
             </Link>
-            
+
             <div className="pt-6 mt-auto">
               <Link
                 to="/contact"
@@ -176,8 +189,8 @@ const Navbar: React.FC = () => {
                 Contact Us
               </Link>
             </div>
-            
-            <div className="h-20"></div> {/* Spacer for bottom scroll */}
+
+            <div className="h-20" />
           </div>
         </div>
       )}
