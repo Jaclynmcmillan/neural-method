@@ -15,7 +15,7 @@ import Button from '../components/Button';
 import { ContactFormData } from '../types';
 import { trackEvent } from '../analytics'; // 👈 add this
 
-const FORM_ENDPOINT = 'https://formspree.io/f/meoyroly' // 👈 put your form URL here
+const FORM_ENDPOINT = 'https://YOUR_FORM_URL_HERE'; // 👈 put your form URL here
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState<ContactFormData>({
@@ -37,61 +37,62 @@ const Contact: React.FC = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setIsSubmitting(true);
-  setSubmitStatus('idle');
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
 
-  // Build FormData for Formspree
-  const formDataToSend = new FormData();
-  formDataToSend.append('name', formData.name);
-  formDataToSend.append('email', formData.email);
-  formDataToSend.append('company', formData.company);
-  formDataToSend.append('message', formData.projectDetails);
+    const payload = {
+      name: formData.name,
+      email: formData.email,
+      business: formData.company,
+      message: formData.projectDetails,
+    };
 
-  try {
-    const response = await fetch(FORM_ENDPOINT, {
-      method: 'POST',
-      // ✅ DO NOT set Content-Type manually, Formspree needs the boundary
-      headers: {
-        Accept: 'application/json',
-      },
-      body: formDataToSend,
-    });
+    console.log(
+      'Form Submission Payload:',
+      JSON.stringify(payload, null, 2)
+    );
 
-    const data = await response.json().catch(() => null);
-    console.log('Formspree response:', response.status, data);
-
-    if (response.ok) {
-      // Optional: GA event
-      try {
-        trackEvent({
-          action: 'submit_contact_form',
-          category: 'lead',
-          label: 'contact_page',
-        });
-      } catch (err) {
-        console.log('[GA] contact submit tracking error', err);
-      }
-
-      setSubmitStatus('success');
-      setFormData({
-        name: '',
-        email: '',
-        company: '',
-        projectDetails: '',
+    try {
+      const response = await fetch(FORM_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify(payload),
       });
-    } else {
-      console.error('Form submit failed:', data);
-      setSubmitStatus('error');
-    }
-  } catch (error) {
-    console.error('Submission error:', error);
-    setSubmitStatus('error');
-  } finally {
-    setIsSubmitting(false);
-  }
-};
 
+      if (response.ok) {
+        // 🔹 optional: GA event for conversions
+        try {
+          trackEvent({
+            action: 'submit_contact_form',
+            category: 'lead',
+            label: 'contact_page',
+          });
+        } catch (err) {
+          console.log('[GA] contact submit tracking error', err);
+        }
+
+        setSubmitStatus('success');
+        setFormData({
+          name: '',
+          email: '',
+          company: '',
+          projectDetails: '',
+        });
+      } else {
+        console.error('Form submit failed:', await response.text());
+        setSubmitStatus('error');
+      }
+    } catch (error) {
+      console.error('Submission error:', error);
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   // 🔻 keep everything below exactly as you have it now
   return (
@@ -102,4 +103,5 @@ const Contact: React.FC = () => {
 };
 
 export default Contact;
+
 
