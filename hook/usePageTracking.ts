@@ -1,3 +1,4 @@
+// src/hooks/usePageTracking.ts
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { trackPageView } from "../analytics";
@@ -10,3 +11,4 @@ export function usePageTracking() {
     trackPageView(path);
   }, [location]);
 }
+
