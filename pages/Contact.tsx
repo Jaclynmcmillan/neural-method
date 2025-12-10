@@ -15,7 +15,7 @@ import Button from '../components/Button';
 import { ContactFormData } from '../types';
 import { trackEvent } from '../analytics'; // 👈 add this
 
-const FORM_ENDPOINT = 'https://YOUR_FORM_URL_HERE'; // 👈 put your form URL here
+const FORM_ENDPOINT = 'https://formspree.io/f/meoyroly' // 👈 put your form URL here
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState<ContactFormData>({
