@@ -1,36 +1,55 @@
 // src/analytics.ts
-export const GA_MEASUREMENT_ID = "G-WGBQPLPKMQ";
+
+export const GA_MEASUREMENT_ID = 'G-WGBQPLPKMQ';
 
 declare global {
   interface Window {
-    gtag?: (...args: any[]) => void;
     dataLayer?: any[];
+    gtag?: (...args: any[]) => void;
   }
 }
 
-// Track a page view (for route changes)
+// Helper to safely get gtag
+function getGtag(): ((...args: any[]) => void) | null {
+  if (typeof window === 'undefined') return null;
+  if (typeof window.gtag === 'function') return window.gtag;
+  return null;
+}
+
+// Optional page-view helper (you’re already getting auto page_view)
 export function trackPageView(path: string) {
-  if (!window.gtag) return;
-  window.gtag("config", GA_MEASUREMENT_ID, {
+  const gtag = getGtag();
+  if (!gtag) {
+    console.log('[GA] gtag not available for page_view', path);
+    return;
+  }
+
+  console.log('[GA] page_view', path);
+  gtag('event', 'page_view', {
     page_path: path,
   });
 }
 
-// Generic event tracking helper
+// Main event helper your Home.tsx uses
 export function trackEvent(params: {
   action: string;
   category?: string;
   label?: string;
   value?: number;
 }) {
-  if (!window.gtag) return;
+  const gtag = getGtag();
 
-  const { action, category, label, value } = params;
+  if (!gtag) {
+    console.log('[GA] gtag not available for event', params.action, params);
+    return;
+  }
 
-  window.gtag("event", action, {
-    event_category: category,
-    event_label: label,
-    value,
+  console.log('[GA] sending event', params.action, params);
+
+  gtag('event', params.action, {
+    event_category: params.category,
+    event_label: params.label,
+    value: params.value,
   });
 }
 
