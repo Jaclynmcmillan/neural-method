@@ -1,8 +1,10 @@
+// src/analytics.ts
 export const GA_MEASUREMENT_ID = "G-WGBQPLPKMQ";
 
 declare global {
   interface Window {
     gtag?: (...args: any[]) => void;
+    dataLayer?: any[];
   }
 }
 
@@ -31,3 +33,4 @@ export function trackEvent(params: {
     value,
   });
 }
+
