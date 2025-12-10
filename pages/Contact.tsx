@@ -52,8 +52,8 @@ const Contact: React.FC = () => {
     try {
       const response = await fetch(FORM_ENDPOINT, {
         method: 'POST',
+        // Let the browser set multipart boundary; just ask for JSON back
         headers: {
-          // let the browser set the multipart boundary; we only ask for JSON back
           Accept: 'application/json',
         },
         body: formDataToSend,
@@ -63,7 +63,7 @@ const Contact: React.FC = () => {
       console.log('Formspree response:', response.status, data);
 
       if (response.ok) {
-        // GA tracking (optional)
+        // Optional GA event
         try {
           trackEvent({
             action: 'submit_contact_form',
@@ -316,6 +316,7 @@ const Contact: React.FC = () => {
 };
 
 export default Contact;
+
 
 
 export default Contact;
